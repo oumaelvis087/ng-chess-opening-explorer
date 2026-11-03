@@ -1,25 +1,46 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   HostListener,
   Input,
   OnChanges,
-  OnInit,
+  OnDestroy,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { NgxChessBoardView } from 'ngx-chess-board';
+import { NgxChessBoardView, PieceIconInput } from 'ngx-chess-board';
 
 @Component({
   selector: 'app-chessboard',
   templateUrl: './chessboard.component.html',
   styleUrls: ['./chessboard.component.scss'],
 })
-export class ChessboardComponent implements OnInit, OnChanges {
-  chessboardSize!: number;
-  @Input() size!: number;
+export class ChessboardComponent implements AfterViewInit, OnChanges, OnDestroy {
+  chessboardSize: number = 480;
+  @Input() size: number = 480;
   @Input() fen: string = '';
 
   @ViewChild('chessboard', { static: false }) chessboard!: NgxChessBoardView;
+  @ViewChild('boardStage', { static: true })
+  boardStage!: ElementRef<HTMLElement>;
+
+  readonly pieceIcons: PieceIconInput = {
+    whiteKingUrl: '/assets/images/chess-pieces/kw.png',
+    whiteQueenUrl: '/assets/images/chess-pieces/qw.png',
+    whiteKnightUrl: '/assets/images/chess-pieces/nw.png',
+    whiteRookUrl: '/assets/images/chess-pieces/rw.png',
+    whitePawnUrl: '/assets/images/chess-pieces/pw.png',
+    whiteBishopUrl: '/assets/images/chess-pieces/bw.png',
+    blackKingUrl: '/assets/images/chess-pieces/kb.png',
+    blackQueenUrl: '/assets/images/chess-pieces/qb.png',
+    blackKnightUrl: '/assets/images/chess-pieces/nb.png',
+    blackRookUrl: '/assets/images/chess-pieces/rb.png',
+    blackPawnUrl: '/assets/images/chess-pieces/pb.png',
+    blackBishopUrl: '/assets/images/chess-pieces/bb.png',
+  };
+
+  private resizeObserver?: ResizeObserver;
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
@@ -35,34 +56,33 @@ export class ChessboardComponent implements OnInit, OnChanges {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateChessboardSize();
+    });
+    this.resizeObserver.observe(this.boardStage.nativeElement);
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fen']) {
-      if (this.fen !== '' && this.chessboard) {
-        this.setBoardFEN();
-      }
+    if (changes['size'] && this.boardStage) {
+      this.updateChessboardSize();
+    }
+
+    if (changes['fen'] && this.fen !== '' && this.chessboard) {
+      this.setBoardFEN();
     }
   }
 
-  updateChessboardSize(): void {
-    const screenWidth = window.innerWidth;
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+  }
 
-    if (screenWidth < 375) {
-      this.chessboardSize = 250;
-    } else if (screenWidth < 440) {
-      this.chessboardSize = 300;
-    } else if (screenWidth < 500) {
-      this.chessboardSize = 350;
-    } else if (screenWidth < 550) {
-      this.chessboardSize = 400;
-    } else if (screenWidth < 615) {
-      this.chessboardSize = 450;
-    } else if (screenWidth < 768) {
-      this.chessboardSize = 500;
-    } else if (screenWidth < 1024) {
-      this.chessboardSize = 600;
-    } else {
-      this.chessboardSize = 600;
-    }
+  updateChessboardSize(): void {
+    const availableSize = this.boardStage.nativeElement.clientWidth - 24;
+    this.chessboardSize = Math.max(
+      100,
+      Math.min(this.size, availableSize)
+    );
   }
 
   resetBoardHandler(): void {

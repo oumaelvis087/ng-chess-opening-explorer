@@ -1,8 +1,36 @@
-<ngx-chess-board
-  [size]="chessboardSize"
-  [lightTileColor]="'#ffffff'"
-  [darkTileColor]="'#4da1b0'"
-  [sourcePointColor]="'#62a138'"
-  [destinationPointColor]="'#62a138'"
-  #chessboard
-></ngx-chess-board>
+<section class="board-panel" aria-label="Interactive chessboard">
+  <header class="board-heading">
+    <div>
+      <p class="board-eyebrow">LIVE POSITION</p>
+      <h2>Explore the board</h2>
+    </div>
+    <span class="board-status"><span></span> Interactive</span>
+  </header>
+
+  <div class="board-stage" #boardStage>
+    <span class="board-halo" aria-hidden="true"></span>
+    <ngx-chess-board
+      [size]="chessboardSize"
+      [lightTileColor]="'#f3f0e5'"
+      [darkTileColor]="'#829b82'"
+      [sourcePointColor]="'rgba(196, 177, 108, 0.58)'"
+      [destinationPointColor]="'rgba(196, 177, 108, 0.58)'"
+      [legalMovesPointColor]="'rgba(58, 89, 62, 0.38)'"
+      [showCoords]="true"
+      [showLastMove]="true"
+      [showLegalMoves]="true"
+      [pieceIcons]="pieceIcons"
+      #chessboard
+    ></ngx-chess-board>
+  </div>
+
+  <footer class="board-footer">
+    <span class="board-hint">Drag a piece to explore a move</span>
+    <span class="piece-legend" aria-label="White and black pieces">
+      <span class="legend-piece white-piece" aria-hidden="true"></span>
+      White
+      <span class="legend-piece black-piece" aria-hidden="true"></span>
+      Black
+    </span>
+  </footer>
+</section>

@@ -1,63 +1,106 @@
-<div class="home-container chess-bg">
-  <div class="flex flex-wrap mx-auto">
-    <div class="w-full lg:w-1/2 flex items-center justify-center">
-      <div class="bg-custom-gray rounded-full shadow-xl p-6 lg:mr-2">
-        <div class="text-center">
-          <h1>Opening Explorer</h1>
-          <p>Organize your chess knowledge effortlessly</p>
-          <p>Browse and learn various chess openings</p>
+<main class="home-page">
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="hero-copy">
+      <p class="hero-eyebrow"><span></span> CHESS, WITH A PLAN</p>
+      <h1 id="home-title">Make your next move <em>your best one.</em></h1>
+      <p class="hero-description">
+        A thoughtful library for discovering chess openings, understanding
+        their ideas, and building a repertoire that feels like yours.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/openings/catalog" class="primary-action">
+          Explore openings
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M4 10h12m-5-5 5 5-5 5"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <span class="hero-note">Find an opening worth making your own.</span>
+      </div>
+      <div class="hero-values" aria-label="Explore at your pace">
+        <span><span class="value-mark">01</span> Browse ideas</span>
+        <span><span class="value-mark">02</span> Learn the lines</span>
+        <span><span class="value-mark">03</span> Play with purpose</span>
+      </div>
+    </div>
 
-          <div class="mt-6 flex items-center justify-center">
-            <a
-              routerLink="/openings/catalog"
-              class="rounded-full no-underline bg-custom-yellow text-black px-4 py-3 font-semibold shadow-lg transform hover:scale-105 transition-transform duration-100"
-            >
-              Explore
-            </a>
-          </div>
+    <div class="hero-visual" aria-label="Chessboard and chess pieces">
+      <div class="visual-glow"></div>
+      <div class="hero-image-frame">
+        <img
+          src="/assets/images/chess-hero.jpg"
+          alt="Chess pieces arranged on a board"
+          fetchpriority="high"
+        />
+        <div class="image-caption">
+          <span class="caption-icon" aria-hidden="true">♞</span>
+          <span>
+            <strong>Every game begins with an idea.</strong>
+            <small>Discover yours.</small>
+          </span>
         </div>
       </div>
+      <div class="visual-chip"><span></span> YOUR OPENING JOURNEY</div>
     </div>
+  </section>
 
-    <div class="w-full lg:w-1/2 flex items-center justify-center mt-5 lg:mt-0">
-      <img
-        src="/assets/images/chess-hero.jpg"
-        alt=""
-        class="w-full h-auto md:w-auto md:max-h-72 rounded-full"
-      />
-    </div>
-  </div>
-
-  <h2 *ngIf="lastThreeOpenings && lastThreeOpenings.length > 0">
-    Featured Openings
-  </h2>
-
-  <ng-container *ngIf="isLoading; else openingsData">
-    <app-loader></app-loader>
-  </ng-container>
-
-  <ng-template #openingsData>
-    <div
-      class="featured-openings flex-wrap"
-      *ngIf="!isLoading && lastThreeOpenings && lastThreeOpenings.length > 0"
-    >
-      <div
-        class="opening-card"
-        *ngFor="let opening of lastThreeOpenings; let i = index"
-      >
-        <img [src]="getRandomChessPieceImg()" alt="Opening {{ i + 1 }} IMG" />
-
-        <h3>
-          {{ opening.name | slice : 0 : 16 }}
-          {{ opening.name.length > 16 ? "..." : "" }}
-        </h3>
-        <p>
-          Difficulty | <strong>{{ opening.level }}</strong>
+  <section
+    class="featured-section"
+    aria-labelledby="featured-title"
+    *ngIf="isLoading || (lastThreeOpenings && lastThreeOpenings.length > 0)"
+  >
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">A PLACE TO BEGIN</p>
+        <h2 id="featured-title">Recently added openings</h2>
+        <p class="section-description">
+          Fresh ideas for your next study session.
         </p>
-        <a routerLink="/openings/details/{{ opening.id }}">Learn More</a>
       </div>
+      <a routerLink="/openings/catalog" class="all-openings-link">
+        View all openings
+        <span aria-hidden="true">→</span>
+      </a>
     </div>
-  </ng-template>
+
+    <ng-container *ngIf="isLoading; else openingsData">
+      <div class="featured-loading"><app-loader></app-loader></div>
+    </ng-container>
+
+    <ng-template #openingsData>
+      <div class="featured-grid" *ngIf="lastThreeOpenings?.length">
+        <article class="featured-card" *ngFor="let opening of lastThreeOpenings; let i = index">
+          <div class="piece-art">
+            <span class="piece-number">{{ i + 1 }}</span>
+            <span class="piece-ring ring-outer"></span>
+            <span class="piece-ring ring-inner"></span>
+            <img
+              [src]="featuredPieceImages[i]"
+              [alt]="opening.name + ' chess piece'"
+              loading="lazy"
+            />
+          </div>
+          <div class="featured-card-body">
+            <p class="card-eyebrow">OPENING · {{ opening.level | uppercase }}</p>
+            <h3>{{ opening.name }}</h3>
+            <p class="card-description">{{ opening.description }}</p>
+            <a
+              routerLink="/openings/details/{{ opening.id }}"
+              [attr.aria-label]="'Learn more about ' + opening.name"
+              class="learn-link"
+            >
+              Learn more <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </ng-template>
+  </section>
 
   <div class="no-openings-message" *ngIf="showNoOpeningsMsg">
     <app-no-openings-msg
@@ -69,4 +112,4 @@
       [minHeight]="'calc(100vh - 650px)'"
     ></app-no-openings-msg>
   </div>
-</div>
+</main>

@@ -15,4 +15,35 @@
 
 .mat-toolbar {
   height: 55px;
+  border-bottom: 1px solid rgba(59, 82, 65, 0.1);
+  background: rgba(248, 249, 246, 0.92);
+  color: #203229;
+  box-shadow: 0 4px 20px rgba(37, 57, 42, 0.04);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.nav-links a.mat-mdc-raised-button {
+  border: 1px solid rgba(66, 94, 72, 0.13);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: none;
+  color: #405f49;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.nav-links a.mat-mdc-raised-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(66, 94, 72, 0.28);
+  background: #fff;
+}
+
+.nav-links > svg {
+  color: #405f49;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a.mat-mdc-raised-button {
+    transition-duration: 0.01ms;
+  }
 }

@@ -18,7 +18,6 @@ import {
 @Component({
   selector: 'app-opening-catalog',
   templateUrl: './opening-catalog.component.html',
-  styleUrls: ['./opening-catalog.component.scss'],
 })
 export class OpeningCatalogComponent implements OnInit {
   faInfoCircle: IconDefinition = faInfoCircle;

@@ -13,12 +13,11 @@ import { NotificationService } from 'src/app/shared/services/notification/notifi
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
   lastThreeOpenings: IOpening[] | null = [];
-  getRandomChessPieceImg: Function = getRandomChessPiece;
+  featuredPieceImages: string[] = [];
   showNoOpeningsMsg: boolean = false;
   isLoading: boolean = true;
 
@@ -39,6 +38,7 @@ export class HomeComponent implements OnInit {
       .getLastThreeOpenings()
       .then((openings) => {
         this.lastThreeOpenings = openings;
+        this.featuredPieceImages = openings.map(() => getRandomChessPiece());
         this.isLoading = false;
         this.showNoOpeningsMsg = this.lastThreeOpenings.length === 0;
         this.changeDetectorRef.detectChanges();

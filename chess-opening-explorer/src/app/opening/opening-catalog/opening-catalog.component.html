@@ -1,121 +1,142 @@
-<div class="catalog-container bg-custom-gray lg:bg-chess bg-cover bg-center">
-  <div class="text-center">
-    <h2 class="title">Browse Openings</h2>
-    <mat-slide-toggle [checked]="isDynamicSearch" (change)="toggleSearchMode()">
-      <span class="ml-1"
-        >{{ isDynamicSearch == true ? "Dynamic" : "Manual" }} Search
-      </span>
-    </mat-slide-toggle>
-  </div>
-
-  <div
-    class="search-bar flex justify-center items-center m-6"
-    [ngClass]="{
-      'pointer-events-none opacity-40': showNoOpeningsMsg || isLoading
-    }"
-  >
-    <input
-      #searchInput
-      type="text"
-      class="w-96"
-      [(ngModel)]="searchQuery"
-      [placeholder]="
-        isDynamicSearch == true ? 'Search as you type' : 'Search openings'
-      "
-      (keydown.enter)="searchHandler()"
-      (input)="isDynamicSearch && searchHandler()"
-    />
-    <div
-      matTooltip="Press '/' to focus the search field"
-      class="ml-2 w-3 h-4 p-3 hidden lg:flex items-center justify-center bg-white rounded-md"
-      *ngIf="isDynamicSearch"
-    >
-      <div class="">/</div>
-    </div>
-    <button
-      type="button"
-      class="ml-2"
-      (click)="searchHandler()"
-      *ngIf="!isDynamicSearch"
-    >
-      <svg
-        class="w-3 h-3"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 20 20"
-      >
-        <path
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-        />
-      </svg>
-    </button>
-  </div>
-
-  <div class="container mx-auto">
-    <ng-container *ngIf="isLoading; else openingsData">
-      <app-loader></app-loader>
-    </ng-container>
-
-    <ng-template #openingsData>
-      <div class="openings-grid px-6 mb-10" *ngIf="filteredOpenings">
-        <div
-          class="opening-card relative"
-          *ngFor="let opening of filteredOpenings; let i = index"
-        >
-          <div
-            matTooltip="{{ opening.description }}"
-            class="w-fit bg-white rounded-tr-md rounded-bl-md absolute right-0 top-0"
-          >
-            <h3 class="px-1 m-1">
-              <fa-icon [icon]="faInfoCircle"></fa-icon>
-            </h3>
-          </div>
-
-          <div class="opening-image">
-            <img [src]="randomChessPieceImgs[i]" alt="Opening {{ i + 1 }}" />
-          </div>
-
-          <div class="opening-details">
-            <h2 class="opening-title">
-              {{ opening.name | slice : 0 : 16 }}
-              {{ opening.name.length > 16 ? "..." : "" }}
-            </h2>
-            <p class="opening-description">
-              {{ opening.description | slice : 0 : 20 }}
-              {{ opening.description.length > 20 ? "..." : "" }}
-            </p>
-            <a
-              mat-stroked-button
-              class="view-details"
-              routerLink="/openings/details/{{ opening.id }}"
-              >Details</a
-            >
-          </div>
-        </div>
-      </div>
-    </ng-template>
-
-    <div class="no-results-message" *ngIf="showNoResultsMsg">
-      <p class="message">
-        No matching openings found.
-        <span class="hidden sm:block"
-          >Please try a different search query.</span
-        >
+<main class="catalog-page">
+  <section class="catalog-shell" aria-labelledby="catalog-title">
+    <header class="catalog-heading">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> THE OPENING LIBRARY</p>
+      <h1 id="catalog-title">Find your next move.</h1>
+      <p class="intro">
+        Explore the ideas, variations, and stories behind the openings you love.
       </p>
-    </div>
+    </header>
 
-    <div class="no-openings-message" *ngIf="showNoOpeningsMsg">
-      <app-no-openings-msg
-        [message]="
-          'No chess openings available at the moment. We\'re constantly updating, so please come back later.'
-        "
-        [imageUrl]="'/assets/images/coming-soon.png'"
-      ></app-no-openings-msg>
-    </div>
-  </div>
-</div>
+    <section
+      class="search-panel"
+      [class.is-disabled]="showNoOpeningsMsg || isLoading"
+      aria-label="Search chess openings"
+    >
+      <div class="search-field">
+        <svg
+          class="search-icon"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="10.8" cy="10.8" r="6.8" />
+          <path d="m16 16 4.5 4.5" />
+        </svg>
+        <input
+          #searchInput
+          type="search"
+          aria-label="Search openings by name"
+          [(ngModel)]="searchQuery"
+          [placeholder]="
+            isDynamicSearch ? 'Try “Sicilian Defense”' : 'Search openings'
+          "
+          (keydown.enter)="searchHandler()"
+          (input)="isDynamicSearch && searchHandler()"
+        />
+        <kbd *ngIf="isDynamicSearch" class="search-shortcut">/</kbd>
+        <button
+          *ngIf="!isDynamicSearch"
+          type="button"
+          class="search-submit"
+          aria-label="Search"
+          (click)="searchHandler()"
+        >
+          Search
+        </button>
+      </div>
+
+      <div class="search-options">
+        <span class="result-count" *ngIf="!isLoading && !showNoOpeningsMsg">
+          {{ filteredOpenings?.length || 0 }}
+          {{ filteredOpenings?.length === 1 ? "opening" : "openings" }}
+        </span>
+        <span class="search-mode">
+          <span>{{ isDynamicSearch ? "Live search" : "Manual search" }}</span>
+          <mat-slide-toggle
+            aria-label="Toggle live search"
+            [checked]="isDynamicSearch"
+            (change)="toggleSearchMode()"
+          ></mat-slide-toggle>
+        </span>
+      </div>
+    </section>
+
+    <section class="library-content" aria-label="Opening results">
+      <ng-container *ngIf="isLoading; else openingsData">
+        <app-loader></app-loader>
+      </ng-container>
+
+      <ng-template #openingsData>
+        <div class="openings-grid" *ngIf="filteredOpenings?.length">
+          <article
+            class="opening-card"
+            *ngFor="let opening of filteredOpenings; let i = index"
+          >
+            <div class="card-art">
+              <span class="card-index">{{ i + 1 }}</span>
+              <button
+                type="button"
+                class="info-button"
+                [matTooltip]="opening.description"
+                [attr.aria-label]="'About ' + opening.name"
+              >
+                <fa-icon [icon]="faInfoCircle"></fa-icon>
+              </button>
+              <span class="art-orbit orbit-one"></span>
+              <span class="art-orbit orbit-two"></span>
+              <img
+                [src]="randomChessPieceImgs[i]"
+                [alt]="opening.name + ' chess piece'"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="opening-details">
+              <p class="card-kicker">CHESS OPENING</p>
+              <h2 class="opening-title">{{ opening.name }}</h2>
+              <p class="opening-description">{{ opening.description }}</p>
+              <a
+                class="view-details"
+                routerLink="/openings/details/{{ opening.id }}"
+                [attr.aria-label]="'Explore ' + opening.name"
+              >
+                Explore opening
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M4.2 10h11.6m-5-5 5 5-5 5"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  />
+                </svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </ng-template>
+
+      <div class="empty-state" *ngIf="showNoResultsMsg && !isLoading">
+        <span class="empty-mark" aria-hidden="true">⌕</span>
+        <h2>No openings found</h2>
+        <p>Try a different name or adjust your search.</p>
+      </div>
+
+      <div class="no-openings-message" *ngIf="showNoOpeningsMsg">
+        <app-no-openings-msg
+          [message]="
+            'No chess openings available at the moment. We\'re constantly updating, so please come back later.'
+          "
+          [imageUrl]="'/assets/images/coming-soon.png'"
+        ></app-no-openings-msg>
+      </div>
+    </section>
+  </section>
+</main>

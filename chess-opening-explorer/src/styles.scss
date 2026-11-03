@@ -21,6 +21,9 @@ $my-app-theme: mat.define-light-theme(
 @tailwind components;
 @tailwind utilities;
 
+@import "./app/opening/opening-catalog/opening-catalog.component.scss";
+@import "./app/core/components/home/home.component.scss";
+
 html,
 body {
   overflow-x: hidden;
